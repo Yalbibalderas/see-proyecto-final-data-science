@@ -61,6 +61,6 @@ shiny::runApp("shiny/")
 
 ## Autores
 
-- Yalbi Balderas
+- Dra. Yalbi Balderas
 - Dr. Jaime Soria
 - Ing. Belén Escola

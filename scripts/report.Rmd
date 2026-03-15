@@ -1,5 +1,5 @@
 ---
-title: "Proyecto de Graduación <img src=\"Shiny/SEE2.jpg\" style=\"float: left;width:150px;\"/> "
+title: "Proyecto de Graduación <img src=\"shiny/assets/SEE2.jpg\" style=\"float: left;width:150px;\"/> "
 subtitle: |
   | Predicción de mortalidad en la Unidad de Cuidados Intensivos (UCI)
   | Programa de Ciencia de Datos, SEE
@@ -32,7 +32,6 @@ library(magrittr)
 library(pROC)
 library(png)
 library(GGally)
-
 ```
 
 ## Conjunto de datos a analizar
@@ -42,9 +41,8 @@ Los datos fueron obtenidos de la página de Kaggle [**WiDS 2020**](https://www.k
 ```{r importe, message = FALSE, warning = FALSE}
 
 # Importar datos
-training_v2 <- read.csv(file = "Data/training_v2.csv")
-unlabeled <- read.csv(file = "Data/unlabeled.csv")
-
+training_v2 <- read.csv(file = "data/training_v2.csv")
+unlabeled <- read.csv(file = "data/unlabeled.csv")
 ```
 
 ## Limpieza de la base de datos
@@ -69,7 +67,6 @@ data_demo$icu_admit_type <- NULL # se retira porque no tiene elementos
 # data_demo$height  # se retira porque parece ser que no influye 
 # data_demo$weight  # se retira porque su influencia parece ya estar recogida en BMI
 data_demo[data_demo$gender == "",] <- NA #transformar los espacios vacíos en NA
-
 ```
 
 ## Transformación de variables 
@@ -168,9 +165,6 @@ data_demo <- mutate(data_demo, glasgow_apache =
 data_demo$gcs_eyes_apache <- factor(data_demo$gcs_eyes_apache, ordered = TRUE)
 data_demo$gcs_motor_apache <- factor(data_demo$gcs_motor_apache, ordered = TRUE)              
 data_demo$gcs_verbal_apache <- factor(data_demo$gcs_verbal_apache, ordered = TRUE)
-
-
-
 ```
 
 ## Análisis exploratorio de los datos
@@ -206,7 +200,7 @@ data_demo %>%
   group_by(age = 1* (age %/% 1)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(age, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("Edad") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #geom_smooth(method = "lm", alpha = .2, colour="red") +
@@ -229,7 +223,7 @@ auc_pre_icu_los_days <- auc(roc(data_demo$hospital_death, data_demo$pre_icu_los_
 
 data_demo <- mutate(data_demo,
                     preIcuLosDays_cat = cut(data_demo$pre_icu_los_days, breaks = c(-Inf, 0, 1, 7, Inf),
-                                            levels(c) <- c("Un día",
+                                            labels = c("Un día",
                                                            "De 1 día a 2 días",
                                                            "De 2 a una semana", 
                                                            "Mas de una semana"),
@@ -246,7 +240,6 @@ data_demo <- mutate(data_demo,
 # Menos de 2 días   0.92049357 0.07950643   #0.75
 # De 2 a una semana 0.88199181 0.11800819   #1.25
 # Mas de una semana 0.80499220 0.19500780   #2
-
 ```
 
 ### Temperatura
@@ -261,7 +254,7 @@ data_demo <- mutate(data_demo, temp_apache_hipo = ifelse(data_demo$temp_apache <
 data_demo <- mutate(data_demo, temp_apache_hiper = ifelse(data_demo$temp_apache > 36.5, data_demo$temp_apache, NA))
 data_demo <- mutate(data_demo,
                     temp_cat = cut(data_demo$temp_apache, breaks = c(-Inf, 36.5, Inf),
-                                            levels(c) <- c("Hipotermia",
+                                            labels = c("Hipotermia",
                                                            "Fiebre"),
                                             ordered_result = TRUE))
 
@@ -269,12 +262,11 @@ data_demo %>%
   group_by(temp_apache = 0.5* (temp_apache %/% 0.5)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(temp_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
    xlab("Temperatura") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "gam", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Presión arterial
@@ -288,7 +280,7 @@ data_demo <- mutate(data_demo, map_apache_hipo = ifelse(data_demo$map_apache <= 
 data_demo <- mutate(data_demo, map_apache_hiper = ifelse(data_demo$map_apache > 95, data_demo$map_apache, NA))
 data_demo <- mutate(data_demo,
                     map_cat = cut(data_demo$map_apache, breaks = c(-Inf, 95, Inf),
-                                   levels(c) <- c("Hipotensión",
+                                   labels = c("Hipotensión",
                                                   "Hipertensión"),
                                    ordered_result = TRUE))
 
@@ -296,12 +288,11 @@ data_demo %>%
   group_by(map_apache = 5* (map_apache %/% 5)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(map_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("Presión arterial") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "gam", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Frecuencia Cardiaca
@@ -316,7 +307,7 @@ data_demo <- mutate(data_demo, heart_rate_apache_norm = ifelse(data_demo$heart_r
 data_demo <- mutate(data_demo, heart_rate_apache_hiper = ifelse(data_demo$heart_rate_apache >= 100, data_demo$heart_rate_apache, NA))
 data_demo <- mutate(data_demo,
                     heart_rate_cat = cut(data_demo$heart_rate_apache, breaks = c(-Inf, 50, 100, Inf),
-                                  levels(c) <- c("Bradicardia",
+                                  labels = c("Bradicardia",
                                                  "Normocardia",
                                                  "Taquicardia"),
                                   ordered_result = TRUE))
@@ -325,12 +316,11 @@ data_demo %>%
   group_by(heart_rate_apache = 20* (heart_rate_apache %/% 20)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(heart_rate_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
    xlab("Frecuencia cardiaca") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format())+
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Frecuencia respiratoria
@@ -345,7 +335,7 @@ data_demo <- mutate(data_demo, resprate_apache_norm = ifelse(data_demo$resprate_
 data_demo <- mutate(data_demo, resprate_apache_hiper = ifelse(data_demo$resprate_apache > 35, data_demo$resprate_apache, NA))
 data_demo <- mutate(data_demo,
                     resprate_cat = cut(data_demo$resprate_apache, breaks = c(-Inf, 10, 35, Inf),
-                                         levels(c) <- c("Bradicardia",
+                                         labels = c("Bradicardia",
                                                         "Normal",
                                                         "Taquipnea"),
                                          ordered_result = TRUE))
@@ -354,12 +344,11 @@ data_demo %>%
   group_by(resprate_apache = 8* (resprate_apache %/% 8)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(resprate_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("Frecuencia respiratoria") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### BMI Índice de masa corporal 
@@ -374,7 +363,7 @@ data_demo <- mutate(data_demo, bmi_norm = ifelse(data_demo$bmi > 30 & data_demo$
 data_demo <- mutate(data_demo, bmi_hiper = ifelse(data_demo$bmi > 45, data_demo$bmi, NA))
 # data_demo <- mutate(data_demo,
 #                     bmi_cat = cut(data_demo$bmi, breaks = c(-Inf, 18.5, 25, 30, 35, 40, Inf),
-#                                        levels(c) <- c("Bajo peso",
+#                                        labels = c("Bajo peso",
 #                                                       "Normal",
 #                                                       "Sobrepeso",
 #                                                       "Obesidad grado I",
@@ -384,7 +373,7 @@ data_demo <- mutate(data_demo, bmi_hiper = ifelse(data_demo$bmi > 45, data_demo$
 # )
 data_demo <- mutate(data_demo,
                     bmi_cat = cut(data_demo$bmi, breaks = c(-Inf, 18.5, 30, Inf),
-                                  levels(c) <- c("Bajo peso",
+                                  labels = c("Bajo peso",
                                                  "Normal",
                                                  "Obesidad"),
                                   ordered_result = TRUE))
@@ -395,12 +384,11 @@ data_demo %>%
   group_by(bmi = 5* (bmi %/% 5)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(bmi, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("Índice de Masa Corporal") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### BUN nitrógeno úrico
@@ -413,12 +401,11 @@ data_demo %>%
   group_by(bun_apache = 5* (bun_apache %/% 5)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(bun_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
    xlab("BUN Nitrógeno úrico") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Arf apache
@@ -435,7 +422,6 @@ ggplot(data_demo, aes(log(glasgow_apache))) +
         title= 'Histograma del porcentaje de personas que fallecen
         en UCI según la variable arf_apache', fill = "Muerte hospitalaria") +
   scale_fill_manual(values=c("#8dd3c7","#e41a1c")) # verde, rojo
-
 ```
 
 ### Creatinina apache
@@ -448,12 +434,11 @@ data_demo %>%
   group_by(creatinine_apache = 1.5* (creatinine_apache %/% 1.5)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(creatinine_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("Creatinina apache") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Urina apache 
@@ -466,12 +451,11 @@ data_demo %>%
   group_by(urineoutput_apache = 1400* (urineoutput_apache %/% 1400)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(urineoutput_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("Urina apache") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Glucosa
@@ -484,7 +468,7 @@ data_demo <- mutate(data_demo, glucose_apache_hipo = ifelse(data_demo$glucose_ap
 data_demo <- mutate(data_demo, glucose_apache_hiper = ifelse(data_demo$glucose_apache > 90, data_demo$glucose_apache, NA))
 data_demo <- mutate(data_demo,
                     glucose_cat = cut(data_demo$glucose_apache, breaks = c(-Inf, 90, Inf),
-                                  levels(c) <- c("Hipoglicemia",
+                                  labels = c("Hipoglicemia",
                                                  "Hiperglicemia"),
                                   ordered_result = TRUE))
 
@@ -492,12 +476,11 @@ data_demo %>%
   group_by(glucose_apache = 5* (glucose_apache %/% 5)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(glucose_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
    xlab("Glucosa") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Diabetes mellitus
@@ -514,7 +497,6 @@ ggplot(data_demo, aes(glucose_apache)) +
         title= "Histograma del porcentaje de personas que
 que fallecen según la variable diabetes mellitus en UCI") +
   scale_fill_manual(values=c("#8dd3c7","#e41a1c")) # verde, rojo
-
 ```
 
 ### Sodio
@@ -527,7 +509,7 @@ data_demo <- mutate(data_demo, sodium_apache_hipo = ifelse(data_demo$sodium_apac
 data_demo <- mutate(data_demo, sodium_apache_hiper = ifelse(data_demo$sodium_apache > 140, data_demo$sodium_apache, NA))
 data_demo <- mutate(data_demo,
                     sodium_cat = cut(data_demo$sodium_apache, breaks = c(-Inf, 140, Inf),
-                                      levels(c) <- c("Hiponatremia",
+                                      labels = c("Hiponatremia",
                                                      "Hipernatremia"),
                                       ordered_result = TRUE))
 
@@ -535,12 +517,11 @@ data_demo %>%
   group_by(sodium_apache = 2* (sodium_apache %/% 2)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(sodium_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("Sodio") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Hematocrito
@@ -555,7 +536,7 @@ data_demo <- mutate(data_demo, hematocrit_apache_hipo = ifelse(data_demo$hematoc
 data_demo <- mutate(data_demo, hematocrit_apache_hiper = ifelse(data_demo$hematocrit_apache > 40, data_demo$hematocrit_apache, NA))
 data_demo <- mutate(data_demo,
                     hematocrit_cat = cut(data_demo$hematocrit_apache, breaks = c(-Inf, 40, Inf),
-                                     levels(c) <- c("Anemia",
+                                     labels = c("Anemia",
                                                     "Policitemia"),
                                      ordered_result = TRUE))
 
@@ -565,12 +546,11 @@ data_demo %>%
   group_by(hematocrit_apache = 5* (hematocrit_apache %/% 5)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(hematocrit_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("Hematocrito") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Glóbulos blancos 
@@ -584,7 +564,7 @@ data_demo <- mutate(data_demo, wbc_apache_hipo = ifelse(data_demo$wbc_apache <= 
 data_demo <- mutate(data_demo, wbc_apache_hiper = ifelse(data_demo$wbc_apache > 6, data_demo$wbc_apache, NA))
 data_demo <- mutate(data_demo,
                     wbc_cat = cut(data_demo$wbc_apache, breaks = c(-Inf, 6, Inf),
-                                         levels(c) <- c("Neutropenia",
+                                         labels = c("Neutropenia",
                                                         "Leucocitosis"),
                                          ordered_result = TRUE))
 
@@ -594,12 +574,11 @@ data_demo %>%
   group_by(wbc_apache = 2* (wbc_apache %/% 2)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(wbc_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("Glóbulos blancos") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Bilirubina apache
@@ -621,12 +600,11 @@ data_demo %>%
   group_by(bilirubin_apache = 6* (bilirubin_apache %/% 6)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(bilirubin_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("Bilirubina apache") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "lm", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Albúmina apache
@@ -643,7 +621,7 @@ data_demo <- mutate(data_demo, albumin_apache_hipo = ifelse(data_demo$albumin_ap
 data_demo <- mutate(data_demo, albumin_apache_hiper = ifelse(data_demo$albumin_apache >= 3.4, data_demo$albumin_apache, NA))
 data_demo <- mutate(data_demo,
                     albumin_cat = cut(data_demo$albumin_apache, breaks = c(-Inf, 3.3, Inf),
-                                  levels(c) <- c("Hipoalbuminemia",
+                                  labels = c("Hipoalbuminemia",
                                                  "Normoalbuminemia"),
                                   ordered_result = TRUE))
 
@@ -653,12 +631,11 @@ data_demo %>%
   group_by(albumin_apache = 0.5* (albumin_apache %/% 0.5)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(albumin_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("Albúmina apache") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "lm", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Fio2 apache
@@ -674,7 +651,7 @@ data_demo %>%
   group_by(fio2_apache = 0.1* (fio2_apache %/% 0.1)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(fio2_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("FIO2") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "lm", alpha = .2, colour="red") +
@@ -697,7 +674,7 @@ data_demo <- mutate(data_demo, paco2_apache_hipo = ifelse(data_demo$paco2_apache
 data_demo <- mutate(data_demo, paco2_apache_hiper = ifelse(data_demo$paco2_apache > 45, data_demo$paco2_apache, NA))
 data_demo <- mutate(data_demo,
                     paco2_cat = cut(data_demo$paco2_apache, breaks = c(-Inf, 45, Inf),
-                                  levels(c) <- c("Hipocapnia",
+                                  labels = c("Hipocapnia",
                                                  "Hipercapnia"),
                                   ordered_result = TRUE))
 
@@ -705,12 +682,11 @@ data_demo %>%
   group_by(paco2_apache = 5* (paco2_apache %/% 5)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(paco2_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("PaCO2") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### Paco 2 for pH apache
@@ -721,13 +697,12 @@ data_demo %>%
   group_by(paco2_for_ph_apache = 5* (paco2_for_ph_apache %/% 5)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(paco2_for_ph_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("PACO2 para pH apache") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   theme_classic() +
   theme(text = element_text(size=14))
-
 ```
 
 ### PaO2 apache
@@ -743,7 +718,7 @@ data_demo <- mutate(data_demo, pao2_apache_hipo = ifelse(data_demo$pao2_apache <
 data_demo <- mutate(data_demo, pao2_apache_hiper = ifelse(data_demo$pao2_apache > 100, data_demo$pao2_apache, NA))
 data_demo <- mutate(data_demo,
                     pao2_cat = cut(data_demo$pao2_apache, breaks = c(-Inf, 100, Inf),
-                                    levels(c) <- c("Hipoxia",
+                                    labels = c("Hipoxia",
                                                    "Hiperoxia"),
                                     ordered_result = TRUE))
 
@@ -751,12 +726,11 @@ data_demo %>%
   group_by(pao2_apache = 25* (pao2_apache %/% 25)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(pao2_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("PaO2") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```
 
 ### pH apache
@@ -771,7 +745,7 @@ data_demo <- mutate(data_demo, ph_apache_hipo = ifelse(data_demo$ph_apache <= 7.
 data_demo <- mutate(data_demo, ph_apache_hiper = ifelse(data_demo$ph_apache > 7.33, data_demo$ph_apache, NA))
 data_demo <- mutate(data_demo,
                     ph_cat = cut(data_demo$ph_apache, breaks = c(-Inf, 7.33, Inf),
-                                   levels(c) <- c("Alcalisis",
+                                   labels = c("Alcalisis",
                                                   "Acidosis"),
                                    ordered_result = TRUE))
 
@@ -779,10 +753,9 @@ data_demo %>%
   group_by(ph_apache = 0.04* (ph_apache %/% 0.04)) %>%
   summarise(hospital_death = (mean(as.numeric(hospital_death), na.rm = F))-1) %>%
   ggplot(aes(ph_apache, hospital_death)) +
-  geom_line(color = "#386cb0", size = 1.5) +
+  geom_line(color = "#386cb0", linewidth = 1.5) +
   xlab("pH") + ylab("Mortalidad") +
   scale_y_continuous(labels = scales::percent_format()) +
   #stat_smooth(method = "loess", alpha = .2, colour="red") +
   custom_theme()
-
 ```

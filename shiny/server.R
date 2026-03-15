@@ -6,7 +6,6 @@
 server <- function(input, output) { # server es una función
   # con argumentos de entrada y de salida
 
-
 # Entrenar el modelo ------------------------------------------------------
   #se divide un prueba y test
   set.seed(123)
@@ -76,7 +75,6 @@ server <- function(input, output) { # server es una función
   UCI_noCat_wf <- workflow() %>%
     add_recipe(UCI_noCat_rec)
   
-  
   # #perparar la receta
   # UCI_noCat_rec %>% #cogemos el recipiente
   #   prep() %>% # se prepara la receta, sirve para ejecutar lo que dice la receta
@@ -111,7 +109,6 @@ server <- function(input, output) { # server es una función
 
 # crear renders -----------------------------------------------------------
 
-  
   output$disptPlot <- renderTable({
     #Model_glm <- glm(hospital_death ~ age, data = fpe, family = "binomial")
     new_data_frame <- data.frame(age=input$age)
@@ -151,14 +148,10 @@ server <- function(input, output) { # server es una función
     new_data_frame <- new_data_frame %>% bind_cols(gcs_eyes_apache= input$gcs_eyes_apache)
     new_data_frame
     
-    
-    
-    
     Mortalidad_prediccion <- predict(UCI_noCat_fitted, new_data_frame, type     = "prob")
     #Mortalidad_prediccion <- predict(Model_glm, NewAge)
     Mortalidad_prediccion
   })
-
 
 # Falla neurologica -------------------------------------------------------
 
@@ -179,7 +172,6 @@ server <- function(input, output) { # server es una función
   # 
 # Analisis de univariables ------------------------------------------------
 
-  
   # Devolver el conjunto de datos solicitado basado en las opcionse a analizar ----
   datos_entrada <- reactive({
     switch(input$datos,  
@@ -361,17 +353,14 @@ server <- function(input, output) { # server es una función
            "bmi_cat" = fpe$bmi_cat,
            "preIcuLosDays_cat" = fpe$preIcuLosDays_cat,
            "escala_glasgow" = fpe$escala_glasgow
-           )
-  })
+           )})
   
   output$summary <- renderPrint({
-    summary(datos_entrada())
-  })
+    summary(datos_entrada())})
   
   # mostrar las primeras "n" observaciones ----
   output$view <- renderTable({
-    head(datos_entrada(), n = input$obs)
-  })
+    head(datos_entrada(), n = input$obs)})
   
   # Histograma de los datos  ----
   # with requested number of bins
@@ -384,19 +373,13 @@ server <- function(input, output) { # server es una función
 
   output$bar <- renderPlot({
     barplot(table(datos_entrada()))
-    title(paste("Gráfico de caja de la variable",input$datos), col.main="red")
-  })
+    title(paste("Gráfico de caja de la variable",input$datos), col.main="red")})
     
   output$caja <- renderPlot({
     boxplot(datos_entrada(), col="lavender")
-    title(paste("Gráfico de caja de la variable",input$datos), col.main="red")
-  })
+    title(paste("Gráfico de caja de la variable",input$datos), col.main="red")})
   
-  
-
 # Analisis bivariado con variable cuantitativa ----------------------------
-
-  
   
   datos_entrada2 <- reactive({
     switch(input$datos2,
@@ -574,25 +557,23 @@ server <- function(input, output) { # server es una función
            "solid_tumor_with_metastasis" = fpe$solid_tumor_with_metastasis,
            "apache_3j_bodysystem" = fpe$apache_3j_bodysystem,
            "apache_2_bodysystem" = fpe$apache_2_bodysystem
-           )
-  })
+           )})
   
   output$analisis1 <- renderPrint({
-    (wilcox.test(datos_entrada2() ~ fpe$hospital_death))$p.value
-  })
+    (wilcox.test(datos_entrada2() ~ fpe$hospital_death))$p.value})
   
   output$dispers <- renderPlot({
     ggplot(fpe, aes(fpe$datos_entrada2())) + 
       geom_histogram() + 
       facet_grid(fpe$hospital_death ~ .) +
-      theme_classic()
-  }) 
+      theme_classic()})
+  
   output$dispersion <- renderPlot({
     ggplot(fpe, aes(datos_entrada2())) + 
       geom_density() + 
       facet_grid(fpe$hospital_death ~ .) +
-      theme_classic()
-  })  
+      theme_classic()})
+  
   output$dispe <- renderPlot({
      hist(datos_entrada2() ~ fpe$hospital_death, horizontal = TRUE, #y =datos_entrada2() ,
          main = paste("Gráfico de cajas de hospital_death vs",input$datos2) #,
@@ -612,21 +593,15 @@ server <- function(input, output) { # server es una función
          # font.lab=4,
          # font.main=1,
          # font.sub=2    
-         ) 
-    
-  })
+         ) })
 
   output$dispersion1 <- renderPlot({
      ggplot(fpe, aes(x= hospital_death, y=datos_entrada2(), fill=hospital_death)) + 
        geom_boxplot() +
-       theme_classic()
-  })    
+       theme_classic()})    
 
-  
 # Analisis bivariado con variable cualitativa -----------------------------
 
-  
-  
   datos_entrada3 <- reactive({
     switch(input$datos3,
            "encounter_id" = fpe$encounter_id,
@@ -803,16 +778,13 @@ server <- function(input, output) { # server es una función
            "solid_tumor_with_metastasis" = fpe$solid_tumor_with_metastasis,
            "apache_3j_bodysystem" = fpe$apache_3j_bodysystem,
            "apache_2_bodysystem" = fpe$apache_2_bodysystem
-           )
-  })
+           )})
 
   output$analisis3 <- renderPrint({
-    chisq.test(table(fpe$hospital_death, datos_entrada3()))$p.value
-  })  
+    chisq.test(table(fpe$hospital_death, datos_entrada3()))$p.value})  
     
   output$tablaFrecCategorica <- renderPrint({
-    table(datos_entrada3(), fpe$hospital_death)
-  })
+    table(datos_entrada3(), fpe$hospital_death)})
   
   output$dispersion2 <- renderPlot({
     barplot(table(fpe$hospital_death, datos_entrada3()), beside = TRUE, 
@@ -833,21 +805,16 @@ server <- function(input, output) { # server es una función
          # font.axis=3,
          # font.lab=4,
          # font.main=1,
-         # font.sub=2    ) 
-   
-    
-  })
+         # font.sub=2    )})
 
   output$tablaPorcCategorica <- renderPrint({
-    round(prop.table(table(datos_entrada3(), fpe$hospital_death), margin = 1)*100, digits = 2)
-  })  
+    round(prop.table(table(datos_entrada3(), fpe$hospital_death), margin = 1)*100, digits = 2)})  
   
   output$dispersion3 <- renderPlot({
     barplot(prop.table(table(fpe$hospital_death, datos_entrada3()), margin = 2)*100, beside = TRUE, 
             main = paste("Gráfico de barras entre hospital_death y ",input$datos3),
             xlab = "hospital_death", ylab = "Porcentaje",
-            sub="Valor 0 son los que sobrevivieron y valor 1 fallecieron"
-    )
+            sub="Valor 0 son los que sobrevivieron y valor 1 fallecieron")
     # main = paste("Gráfico de dispersión de cambio vs",input$datos3),
     # sub="Las cantidades numéricas representan unidades monetarias.",
     # pch=20,cex = 1.5,# pch se cambia para elegir tipo de punti y cex su tamaño
@@ -861,21 +828,15 @@ server <- function(input, output) { # server es una función
     # font.axis=3,
     # font.lab=4,
     # font.main=1,
-    # font.sub=2    ) 
-    
-    
-  })  
+    # font.sub=2    )})  
     
 #   output$info <- renderText({
-#     paste0("x=", input$plot_click$x, "\ny=",input$plot_click$y)
-#   })
-#   
+#     paste0("x=", input$plot_click$x, "\ny=",input$plot_click$y)})
 #   
 #   datos_entrada4 <- reactive({
 #     switch(input$datos4,
 #            "ajuste" = fpe$ajuste,
-#            "cambio" = fpe$cambio)
-#   })
+#            "cambio" = fpe$cambio)})
 #   
 #   output$dispersion4 <- renderPlot({
 #     plot(x = fpe$producto,y =datos_entrada4() ,
@@ -888,93 +849,73 @@ server <- function(input, output) { # server es una función
 #          col.main="red", # color del titulo
 #          col.sub="orange", # color del subtitulo
 #          fg="turquoise",
-#          
 #          font.axis=3,
 #          font.lab=4,
 #          font.main=1,
-#          font.sub=2    ) 
-#     
-#   })
+#          font.sub=2    )})
 #   
 #   dato_dependiente <- reactive({
 #     switch(input$dependiente,
 #            "ajuste" = fpe$ajuste,
 #            "cambio" = fpe$cambio,
-#            "producto" = fpe$producto)
-#   })
-# 
-#   
+#            "producto" = fpe$producto)})
+    
 #   output$independiente <- renderUI({
 #     selectInput("independiente", 
 #                 label = h6("Variable independiente:"), 
 #                 choices = names(fpe)[names(fpe)!= input$dependiente],
-#                 selected = names(fpe)[names(fpe)!=input$dependiente][1])
-#   })
-#   
-#   
+#                 selected = names(fpe)[names(fpe)!=input$dependiente][1])})
+# 
 #   dato_independiente <- reactive({
 #     switch(input$independiente,
 #            "ajuste" = fpe$ajuste,
 #            "cambio" = fpe$cambio,
-#            "producto" = fpe$producto)
-#   })
+#            "producto" = fpe$producto)})
 #   
-#   
-#       
 # output$gmodelo1 <- renderPlot({
 #   g <- ggplot(data = NULL, aes(x=dato_independiente(), y=dato_dependiente()))
 #   # + para añadir más capas de gráficos
-#   g + geom_point(size=2, color="green",show.legend=T)
-# })
-# 
+#   g + geom_point(size=2, color="green",show.legend=T)})
 # 
 # output$gmodelo2 <- renderPlot({
 #   g <- ggplot(data = NULL, aes(x=dato_independiente(), y=dato_dependiente()))
 #   # + para añadir más capas de gráficos
-#   g + geom_point(size=2, color="green",show.legend=T)+stat_smooth(data = data.frame(dato_independiente(),dato_dependiente()), aes(x=dato_independiente(),y=dato_dependiente()))
-# })
+#   g + geom_point(size=2, color="green",show.legend=T)+stat_smooth(data = data.frame(dato_independiente(),dato_dependiente()), aes(x=dato_independiente(),y=dato_dependiente()))})
 #  
-# 
 # output$gmodelo3 <- renderPlot({
 #   g <- ggplot(data = NULL, aes(x=dato_independiente(), y=dato_dependiente()))
 #   # + para añadir más capas de gráficos
-#   g + geom_point(size=2, color="green",show.legend=T)+ geom_quantile(size=1, color="orange",show.legend=T)
-# })
+#   g + geom_point(size=2, color="green",show.legend=T)+ geom_quantile(size=1, color="orange",show.legend=T)})
 # 
 # dato_dependiente1 <- reactive({
 #   switch(input$dependiente1,
 #          "ajuste" = fpe$ajuste,
 #          "cambio" = fpe$cambio,
-#          "producto" = fpe$producto)
-# })
+#          "producto" = fpe$producto)})
 # 
 # #output$independiente1 guarda la opcion selecccionada (de las no seleccionadas en el primer widget)
 # output$independiente1 <- renderUI({ # no imprime ningun resultado, ni tiene conexion con ui, crea el objeto que vamos a usar dentro
 #   selectInput("independiente1", 
 #               label = h6("Variable independiente:"), 
 #               choices = names(fpe)[names(fpe)!= input$dependiente1],
-#               selected = names(fpe)[names(fpe)!=input$dependiente1][1])
-# })
+#               selected = names(fpe)[names(fpe)!=input$dependiente1][1])})
 # 
 # dato_independiente1 <- reactive({
 #   switch(input$independiente1,
 #          "ajuste" = fpe$ajuste,
 #          "cambio" = fpe$cambio,
-#          "producto" = fpe$producto)
-# })
+#          "producto" = fpe$producto)})
 # 
 # output$texto <- renderText({
-#   paste(  "Modelo lineal de ",input$dependiente1," vs ",input$independiente1)
-# })
+#   paste(  "Modelo lineal de ",input$dependiente1," vs ",input$independiente1)})
+#    
 # output$modelo <-  renderPrint({
-#   summary(lm(dato_dependiente1()~dato_independiente1()))
-# })
+#   summary(lm(dato_dependiente1()~dato_independiente1()))})
 # 
 # output$texto1 <- renderText({
 #   modelo <- lm(dato_dependiente1()~dato_independiente1())
 #   paste(input$dependiente1," = ",round(modelo$coefficients[1],2),
-#         " + ",round(modelo$coefficients[2],2),input$independiente1)
-# })
+#         " + ",round(modelo$coefficients[2],2),input$independiente1)})
 # 
 # output$residuos <- renderTable({
 #   modelo <- lm(dato_dependiente1()~dato_independiente1())
@@ -991,10 +932,4 @@ server <- function(input, output) { # server es una función
 #   data.frame("x"=dato_dependiente1(),
 #              "y"=dato_independiente1(),
 #              "valores ajustados"=modelo$fitted.values,
-#              "residuales"=modelo$residuals)
-# })
-# 
-# 
-
-
-}
+#              "residuales"=modelo$residuals)})}
