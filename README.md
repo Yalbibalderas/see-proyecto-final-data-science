@@ -22,16 +22,14 @@ see-proyecto-final-data-science/
 │   ├── server.R                     # Lógica del servidor
 │   ├── ui.R                         # Interfaz de usuario
 │   └── assets/                      # Imágenes de la app
-├── data/                            # Datos (no incluidos en el repo)
-└── results/                         # Resultados generados (no incluidos)
+└── see-proyecto-final-data-science.Rproj
 ```
 
 ## Datos
 
-Los datos provienen del [WiDS Datathon 2020](https://www.kaggle.com/c/widsdatathon2020) de Kaggle. Para reproducir el análisis, descarga los archivos y colócalos en `data/`:
+Los datos provienen del [WiDS Datathon 2020](https://www.kaggle.com/c/widsdatathon2020) de Kaggle. Para reproducir el análisis, descarga los archivos y colócalos en `data/raw/`.
 
-- `training_v2.csv` — Datos de entrenamiento (~91,000 registros)
-- `unlabeled.csv` — Datos sin etiqueta
+> **Nota:** Las carpetas `data/` y `results/` no se incluyen en el repositorio.
 
 ## Modelos evaluados
 
