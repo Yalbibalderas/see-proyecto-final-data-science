@@ -20,14 +20,9 @@ library(DescTools) #para calcular psudo r2
 
 
 
-#setear la carpeta donde estan los datos
-#setwd("C:/Users/DELL/OneDrive/Escritorio/clasesShinySEE/datathon/Shiny")
+# Importar base de datos --------------------------------------------------
 
-
-#setwd(directory/in/my/computer)
-
-training_v2 <- read.csv(file = "training_v2.csv")
-#unlabeled <- read.csv(file = "unlabeled.csv")
+training_v2 <- read.csv(file = "../data/training_v2.csv")
 
 
 

@@ -1,5 +1,18 @@
-.DS_Store
-.Rproj.user
+# RStudio
+.Rproj.user/
 .Rhistory
 .RData
 .Ruserdata
+.Rapp.history
+
+# macOS
+.DS_Store
+
+# Data (large CSV files, keep local only)
+data/
+
+# Results (generated outputs)
+results/
+
+# Shiny deployment config
+shiny/rsconnect/

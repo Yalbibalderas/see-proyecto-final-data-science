@@ -5,15 +5,10 @@ library(tidyverse)
 library(magrittr)
 library(pROC)
 
-# Generar ambiente --------------------------------------------------------
-#se pone como comentario para shiny
-# setwd("C:/Users/DELL/OneDrive/Escritorio/clasesShinySEE/datathon/Datos")
-# getwd()
+# Importar base de datos --------------------------------------------------
 
-# Importar base de datos -----------------------------------------------------
-
-training_v2 <- read.csv(file = "Data/training_v2.csv")
-unlabeled <- read.csv(file = "Data/unlabeled.csv")
+training_v2 <- read.csv(file = "data/training_v2.csv")
+unlabeled <- read.csv(file = "data/unlabeled.csv")
 
 # Limpieza de la base de datos --------------------------------------------
 

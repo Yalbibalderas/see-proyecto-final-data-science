@@ -12,17 +12,10 @@ library(mlogit)# para regresion loggistica
 library(tidyr)
 
 
-# Generar ambiente --------------------------------------------------------
+# Importar base de datos --------------------------------------------------
 
-
-getwd()
-setwd("C:/Users/DELL/OneDrive/Escritorio/clases shiny SEE/datathon/Datos")
-
-# Bajar base de datos -----------------------------------------------------
-
-
-training_v2 <- read.csv(file = "training_v2.csv")
-unlabeled <- read.csv(file = "unlabeled.csv")
+training_v2 <- read.csv(file = "data/training_v2.csv")
+unlabeled <- read.csv(file = "data/unlabeled.csv")
 
 
 # Limpiesa de la base de datos --------------------------------------------
