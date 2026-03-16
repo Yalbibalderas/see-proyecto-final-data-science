@@ -62,3 +62,16 @@ shiny::runApp("shiny/")
 - Dra. Yalbi Balderas
 - Dr. Jaime Soria
 - Ing. Belén Escola
+
+---
+
+## English
+
+Final project for the SEE (Statistics Students Society) Data Science course. Analysis of the **WiDS Datathon 2020**: prediction of hospital mortality in ICU patients (~91,000 records). The final model (logistic regression with tidymodels) achieved an AUC-ROC of 0.868 and was deployed as an interactive Shiny application ("ARQUIMEDEZ").
+
+### How to reproduce
+
+1. Download data from [WiDS Datathon 2020](https://www.kaggle.com/c/widsdatathon2020) and place in `data/raw/`
+2. Open `see-proyecto-final-data-science.Rproj` in RStudio
+3. Run scripts in numerical order from `scripts/`
+4. Run `shiny::runApp("shiny/")` for the interactive app
